@@ -26,7 +26,12 @@ import {
   Cloud,
   TrendingUp,
   Box,
-  Cpu
+  Cpu,
+  Wifi,
+  Layers,
+  Infinity as InfinityIcon,
+  Home,
+  Router
 } from 'lucide-react';
 
 // --- データセット ---
@@ -54,18 +59,30 @@ const QUIZ_POOL = [
   },
   {
     id: 3,
-    question: "SNSのDM（チャット）が、通常のメールと大きく異なる点は？",
+    question: "現在、IPv6への移行が進められている主な理由は？",
     options: [
-      "文字しか送れない",
-      "リアルタイム通信で、相手に即座にメッセージが表示される",
-      "インターネットを使わずに通信している",
-      "サーバを通さずに直接スマホ同士で通信している"
+      "IPv4の通信速度が遅すぎるから",
+      "IPv4のアドレス（住所）が枯渇して足りなくなったから",
+      "IPv4ではWi-Fiが使えないから",
+      "IPv6にすると利用料金が無料になるから"
     ],
     answer: 1,
-    explanation: "DMやチャットアプリは、サーバと常時接続（WebSocketなど）を保つことで、メールのような「問い合わせ」動作なしに、即座に相手にメッセージを届ける（プッシュする）ことができます。"
+    explanation: "IPv4は約43億個しかアドレスを作れませんが、スマホやIoT機器の急増で足りなくなりました。IPv6は約340澗（かん）個というほぼ無限のアドレスを持っています。"
   },
   {
     id: 4,
+    question: "IPv6の特徴として正しい記述はどれ？",
+    options: [
+      "アドレスを10進数で表記する",
+      "ルータでのアドレス変換（IPマスカレード）が不要になる",
+      "セキュリティ機能が削除されている",
+      "IPv4とそのまま通信できる"
+    ],
+    answer: 1,
+    explanation: "IPv6はアドレスが潤沢にあるため、LAN内の端末にもグローバルアドレスを割り当てられます。そのため、IPv4で必須だったNAT/IPマスカレード（アドレス変換）が不要になり、通信がシンプルになります。"
+  },
+  {
+    id: 5,
     question: "Webメールを利用する際、ブラウザとWebサーバ間の通信で主に使われるプロトコルは？",
     options: [
       "SMTP",
@@ -77,7 +94,7 @@ const QUIZ_POOL = [
     explanation: "ブラウザとWebサーバの間は、Webページを見るのと同じHTTP（安全なHTTPS）で通信します。裏側のメール送信処理でSMTPが使われます。"
   },
   {
-    id: 5,
+    id: 6,
     question: "動画ストリーミング配信の仕組みとして適切な記述は？",
     options: [
       "動画データを全てダウンロードし終わってから再生する",
@@ -98,7 +115,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-200">
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-blue-600 p-2 rounded-lg">
               <Globe className="w-6 h-6 text-white" />
@@ -107,8 +124,8 @@ const App = () => {
               情報Ⅰ：ネットワークの仕組み
             </h1>
           </div>
-          <nav className="hidden md:flex gap-1 bg-slate-100 p-1 rounded-lg">
-            {['intro', 'structure', 'protocol', 'cloud', 'quiz'].map((tab) => (
+          <nav className="hidden lg:flex gap-1 bg-slate-100 p-1 rounded-lg">
+            {['intro', 'structure', 'protocol', 'ipv6', 'cloud', 'quiz'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -121,6 +138,7 @@ const App = () => {
                 {tab === 'intro' && 'はじめに'}
                 {tab === 'structure' && '2つの接続方式'}
                 {tab === 'protocol' && 'サービスの裏側'}
+                {tab === 'ipv6' && 'IPv6'}
                 {tab === 'cloud' && 'クラウド'}
                 {tab === 'quiz' && '確認テスト'}
               </button>
@@ -128,8 +146,8 @@ const App = () => {
           </nav>
         </div>
         {/* Mobile Nav */}
-        <div className="md:hidden flex overflow-x-auto gap-2 p-2 bg-slate-100 no-scrollbar">
-           {['intro', 'structure', 'protocol', 'cloud', 'quiz'].map((tab) => (
+        <div className="lg:hidden flex overflow-x-auto gap-2 p-2 bg-slate-100 no-scrollbar">
+           {['intro', 'structure', 'protocol', 'ipv6', 'cloud', 'quiz'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -142,6 +160,7 @@ const App = () => {
                 {tab === 'intro' && 'はじめに'}
                 {tab === 'structure' && '接続方式'}
                 {tab === 'protocol' && '裏側の仕組み'}
+                {tab === 'ipv6' && 'IPv6'}
                 {tab === 'cloud' && 'クラウド'}
                 {tab === 'quiz' && 'テスト'}
               </button>
@@ -154,6 +173,7 @@ const App = () => {
           {activeTab === 'intro' && <IntroSection key="intro" onNext={() => setActiveTab('structure')} />}
           {activeTab === 'structure' && <StructureSection key="structure" />}
           {activeTab === 'protocol' && <ProtocolSection key="protocol" />}
+          {activeTab === 'ipv6' && <IPv6Section key="ipv6" />}
           {activeTab === 'cloud' && <CloudSection key="cloud" />}
           {activeTab === 'quiz' && <QuizSection key="quiz" />}
         </AnimatePresence>
@@ -826,7 +846,267 @@ const ProtocolSimulation = ({ type, info }) => {
   );
 };
 
-// 4. クラウドセクション（新規追加）
+// 4. IPv6セクション（新規追加）
+const IPv6Section = () => {
+  const [viewMode, setViewMode] = useState('ipv4'); // 'ipv4' | 'ipv6'
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="space-y-8"
+    >
+      <div className="text-center">
+        <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
+           <Layers className="w-8 h-8 text-purple-500" />
+           次世代の住所「IPv6」
+        </h2>
+        <p className="text-slate-600 max-w-2xl mx-auto">
+          インターネット上の住所である「IPアドレス」。<br/>
+          従来使われてきた「IPv4」が足りなくなり、新しい「IPv6」への移行が進んでいます。
+        </p>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+        {/* Toggle */}
+        <div className="flex border-b border-slate-200">
+           <button 
+             onClick={() => setViewMode('ipv4')}
+             className={`flex-1 py-4 text-center font-bold transition-colors flex items-center justify-center gap-2 ${
+               viewMode === 'ipv4' ? 'bg-orange-50 text-orange-700 border-b-2 border-orange-600' : 'text-slate-500 hover:bg-slate-50'
+             }`}
+           >
+             <Box className="w-5 h-5" /> 現在：IPv4（枯渇中）
+           </button>
+           <button 
+             onClick={() => setViewMode('ipv6')}
+             className={`flex-1 py-4 text-center font-bold transition-colors flex items-center justify-center gap-2 ${
+               viewMode === 'ipv6' ? 'bg-purple-50 text-purple-700 border-b-2 border-purple-600' : 'text-slate-500 hover:bg-slate-50'
+             }`}
+           >
+             <InfinityIcon className="w-5 h-5" /> 次世代：IPv6（無限）
+           </button>
+        </div>
+
+        {/* Visualizer */}
+        <div className={`p-8 h-80 relative flex items-center justify-center overflow-hidden transition-colors duration-500 ${viewMode === 'ipv4' ? 'bg-orange-900/10' : 'bg-slate-900'}`}>
+           <AnimatePresence mode="wait">
+             {viewMode === 'ipv4' ? (
+                <IPv4Visual key="ipv4" />
+             ) : (
+                <IPv6Visual key="ipv6" />
+             )}
+           </AnimatePresence>
+        </div>
+
+        {/* Explanation */}
+        <div className="p-6 bg-white border-t border-slate-100">
+           <div className="grid md:grid-cols-2 gap-6">
+             <div className="bg-slate-50 p-4 rounded-lg">
+                <h4 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
+                   <Layers className="w-4 h-4" /> アドレス表記の違い
+                </h4>
+                <div className="space-y-4 text-sm">
+                   <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="font-bold text-orange-600">IPv4 (32ビット)</div>
+                        <div className="text-xs text-slate-500">8ビット×4</div>
+                      </div>
+                      <code className="bg-white px-3 py-2 rounded border border-slate-200 text-xs font-mono block w-full text-center">
+                        <span className="text-slate-400">例: </span>192.168.0.1
+                      </code>
+                      <p className="text-slate-600 mt-1 text-xs">
+                        10進数で表記。約43億個しかなく、足りない。
+                      </p>
+                   </div>
+                   <div className="border-t border-slate-200 pt-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="font-bold text-purple-600">IPv6 (128ビット)</div>
+                        <div className="text-xs text-slate-500">16ビット×8</div>
+                      </div>
+                      <code className="bg-white px-3 py-2 rounded border border-slate-200 text-xs font-mono block w-full text-center">
+                         <span className="text-slate-400">例: </span>2001:0db8:85a3...:7334
+                      </code>
+                      <p className="text-slate-600 mt-1 text-xs">
+                        16進数で表記。約340澗（かん）個あり、実質無限。
+                      </p>
+                   </div>
+                </div>
+             </div>
+             <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
+                   <Zap className="w-4 h-4" /> 通信の仕組みの違い
+                </h4>
+                <div className="space-y-3 text-sm text-slate-700 leading-relaxed">
+                   <p>
+                     <strong className="text-orange-700">IPv4の場合:</strong><br/>
+                     家の中では「プライベートIP」を使い、インターネットに出る時にルータで「グローバルIP」に変換する<strong className="bg-orange-100 px-1 rounded">IPマスカレード（NAPT）</strong>が必要です。これが混雑の元になります。
+                   </p>
+                   <p>
+                     <strong className="text-purple-700">IPv6の場合:</strong><br/>
+                     アドレスが無限にあるため、家の中のスマホ1台1台に<strong className="bg-purple-100 px-1 rounded">グローバルIP（IPv6）</strong>を直接持たせられます。変換が不要になり、通信がシンプルで高速になります。
+                   </p>
+                </div>
+             </div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// IPv6 Visuals
+const IPv4Visual = () => {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-full relative flex items-center justify-center">
+      
+      {/* LAN Area */}
+      <div className="absolute left-4 top-4 bottom-4 w-1/3 border-2 border-dashed border-slate-400/50 rounded-xl bg-slate-50/50 p-2 flex flex-col items-center justify-center">
+         <div className="absolute top-2 left-2 flex items-center gap-1 text-xs font-bold text-slate-500">
+            <Home className="w-3 h-3" /> 家の中 (LAN)
+         </div>
+         <div className="text-[10px] text-slate-400 mb-4 bg-white px-1 rounded">
+            プライベートIP: 192.168.x.x
+         </div>
+         
+         {[0, 1, 2].map((i) => (
+            <div key={i} className="mb-4 flex items-center gap-2 last:mb-0 relative z-10">
+               <Smartphone className="w-6 h-6 text-slate-600" />
+               <span className="text-[10px] font-mono bg-white border border-slate-200 px-1 rounded">192.168.0.{i+2}</span>
+            </div>
+         ))}
+      </div>
+
+      {/* Router (NAT) */}
+      <div className="absolute left-1/3 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+         <div className="bg-orange-500 text-white p-3 rounded-lg shadow-xl border-2 border-white flex flex-col items-center w-32">
+            <Router className="w-8 h-8 mb-1" />
+            <span className="font-bold text-xs">ルータ (NAT)</span>
+            <span className="text-[9px] mt-1 bg-orange-700 px-1 rounded">IP変換中...</span>
+         </div>
+         {/* Queue indicator */}
+         <div className="mt-2 text-[10px] font-bold text-orange-600 animate-pulse bg-orange-100 px-2 rounded-full">
+            ⚠️ 変換待ち渋滞
+         </div>
+      </div>
+
+      {/* Internet Area */}
+      <div className="absolute right-0 top-0 bottom-0 w-1/2 flex items-center justify-center">
+         <Cloud className="w-32 h-32 text-slate-300" />
+         <span className="absolute text-slate-500 font-bold">インターネット</span>
+      </div>
+
+      {/* Packet Animation */}
+      {[0, 1, 2].map((i) => (
+         <motion.div
+            key={i}
+            className="absolute top-1/2 left-[15%] w-3 h-3 rounded-full z-30 flex items-center justify-center"
+            animate={{
+               x: [0, 160, 160, 400], // Move to router -> wait -> move out
+               backgroundColor: ["#94a3b8", "#94a3b8", "#f97316", "#f97316"], // Gray (Private) -> Orange (Global)
+            }}
+            transition={{
+               duration: 3,
+               repeat: Infinity,
+               delay: i * 1,
+               times: [0, 0.4, 0.6, 1] // Wait at router
+            }}
+         >
+            <span className="absolute -top-4 text-[8px] font-mono whitespace-nowrap bg-white/80 px-1 rounded">
+               {/* Label changes dynamically via separate elements logic or simplified here */}
+            </span>
+         </motion.div>
+      ))}
+      
+      {/* Global IP Indicator at Router Exit */}
+      <div className="absolute left-[45%] top-[60%] text-[10px] text-orange-700 font-bold bg-white/80 px-2 py-1 rounded shadow-sm">
+         グローバルIP: 203.0.113.1
+         <br/><span className="text-[8px] font-normal">(1つを共有)</span>
+      </div>
+
+    </motion.div>
+  )
+}
+
+const IPv6Visual = () => {
+   // Generate random stars
+   const stars = useMemo(() => Array.from({ length: 20 }).map((_, i) => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 2
+   })), []);
+
+   return (
+     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-full relative overflow-hidden">
+       {/* Stars background */}
+       {stars.map((star, i) => (
+          <motion.div
+             key={i}
+             className="absolute w-1 h-1 bg-white rounded-full"
+             style={{ top: `${star.y}%`, left: `${star.x}%` }}
+             animate={{ opacity: [0.2, 1, 0.2] }}
+             transition={{ duration: 3, delay: star.delay, repeat: Infinity }}
+          />
+       ))}
+
+      {/* LAN Area (Transparent) */}
+      <div className="absolute left-4 top-4 bottom-4 w-1/3 border-2 border-dashed border-purple-500/30 rounded-xl bg-purple-900/20 p-2 flex flex-col items-center justify-center">
+         <div className="absolute top-2 left-2 flex items-center gap-1 text-xs font-bold text-purple-300">
+            <Home className="w-3 h-3" /> 家の中 (LAN)
+         </div>
+         <div className="text-[10px] text-purple-300 mb-4 bg-purple-900/50 px-1 rounded border border-purple-500/30">
+            全員グローバルIP持ち
+         </div>
+         
+         {[0, 1, 2].map((i) => (
+            <div key={i} className="mb-8 flex items-center gap-2 last:mb-0 relative z-10">
+               <Laptop className="w-8 h-8 text-purple-300" />
+               <div className="text-[9px] font-mono bg-slate-900 text-purple-200 border border-purple-500 px-1 rounded">
+                  2001:db8::{i+1}
+               </div>
+            </div>
+         ))}
+      </div>
+
+      {/* Router (Pass-through) */}
+      <div className="absolute left-1/3 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center">
+         <div className="bg-slate-800 text-purple-300 p-3 rounded-lg shadow-xl border border-purple-500 flex flex-col items-center w-32">
+            <Router className="w-8 h-8 mb-1" />
+            <span className="font-bold text-xs">IPv6 ルータ</span>
+            <span className="text-[9px] mt-1 bg-purple-900 px-1 rounded text-green-300">変換不要 (高速)</span>
+         </div>
+      </div>
+
+      {/* Internet Area */}
+      <div className="absolute right-0 top-0 bottom-0 w-1/2 flex items-center justify-center">
+         <Globe className="w-32 h-32 text-purple-500/20 animate-spin-slow" />
+         <span className="absolute text-purple-300 font-bold">インターネット</span>
+      </div>
+
+      {/* Packet Animation (No Stop) */}
+      {[0, 1, 2].map((i) => (
+         <motion.div
+            key={i}
+            className="absolute top-1/2 left-[15%] w-3 h-3 rounded-full z-30 bg-purple-400 shadow-[0_0_10px_#a855f7]"
+            style={{ marginTop: (i - 1) * 40 }} 
+            animate={{
+               x: [0, 400], 
+               opacity: [1, 1, 0]
+            }}
+            transition={{
+               duration: 2, // Faster than IPv4
+               repeat: Infinity,
+               delay: i * 0.8,
+               ease: "linear"
+            }}
+         />
+      ))}
+
+     </motion.div>
+   )
+}
+
+// 5. クラウドセクション
 const CloudSection = () => {
   const [traffic, setTraffic] = useState(1); // 1: Low, 2: Mid, 3: High
   const [servers, setServers] = useState(1);
@@ -1010,7 +1290,7 @@ const CloudSection = () => {
   );
 };
 
-// 5. クイズセクション
+// 6. クイズセクション
 const QuizSection = () => {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
